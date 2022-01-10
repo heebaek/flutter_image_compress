@@ -3,6 +3,9 @@ package com.example.flutterimagecompress.handle.common
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
 import com.example.flutterimagecompress.exif.ExifKeeper
 import com.example.flutterimagecompress.ext.calcScale
 import com.example.flutterimagecompress.ext.compress
@@ -78,10 +81,14 @@ class CommonHandler(override val type: Int) : FormatHandler {
     log("dst width = $destW")
     log("dst height = $destH")
 
-    Bitmap.createScaledBitmap(bitmap, destW.toInt(), destH.toInt(), true)
-            .rotate(rotate)
-            .compress(bitmapFormat, quality, outputStream)
 
+	var scaledBitmap = Bitmap.createBitmap(destW.toInt(), destH.toInt(), bitmap.getConfig())
+	var canvas = Canvas(scaledBitmap)
+	var dest = RectF(0f, 0f, destW, destH)
+	 //private static Paint paint = new Paint(PaintFlags.FilterBitmap | PaintFlags.AntiAlias | PaintFlags.Dither);
+	var paint = Paint(Paint.FILTER_BITMAP_FLAG)
+    canvas.drawBitmap(bitmap, null, dest, paint)
+	scaledBitmap.rotate(rotate).compress(bitmapFormat, quality, outputStream)	
     return outputStream.toByteArray()
   }
 
